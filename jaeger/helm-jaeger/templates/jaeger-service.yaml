@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Values.name }}-jaegerquery"
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  ports:
+    - name: query-http
+      port: {{ .Values.jaegerquery.queryhttp.port }}
+      protocol: {{ .Values.jaegerquery.queryhttp.protocol }}
+      targetPort: {{ .Values.jaegerquery.queryhttp.targetPort }}
+  selector:
+    release: {{ .Release.Name }}
+  type: {{ .Values.jaegerquery.type }} 
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Values.name }}-jaegercollector"
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  ports:
+    - name: collector-tchannel
+      port: {{ .Values.jaegercollector.jaegercollectortchannel.port }}
+      protocol: {{ .Values.jaegercollector.jaegercollectortchannel.protocol }}
+      targetPort: {{ .Values.jaegercollector.jaegercollectortchannel.targetPort }}
+    - name: collector-http
+      port: {{ .Values.jaegercollector.jaegercollectorhttp.port }}
+      protocol: {{ .Values.jaegercollector.jaegercollectorhttp.protocol }}
+      targetPort: {{ .Values.jaegercollector.jaegercollectorhttp.targetPort }}
+    - name: collector-zipkin
+      port: {{ .Values.jaegercollector.jaegercollectorzipkin.port }}
+      protocol: {{ .Values.jaegercollector.jaegercollectorzipkin.protocol }}
+      targetPort: {{ .Values.jaegercollector.jaegercollectorzipkin.targetPort }}
+  selector:
+    release: {{ .Release.Name }}
+  type: {{ .Values.jaegercollector.type }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Values.name }}-jaegeragent"
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  ports:
+    - name: agent-zipkinthrift
+      port: {{ .Values.jaegeragent.agentzipkinthrift.port }}
+      protocol: {{ .Values.jaegeragent.agentzipkinthrift.protocol }}
+      targetPort: {{ .Values.jaegeragent.agentzipkinthrift.targetPort }}
+    - name: agent-compact
+      port: {{ .Values.jaegeragent.agentcompact.port }}
+      protocol: {{ .Values.jaegeragent.agentcompact.protocol }}
+      targetPort: {{ .Values.jaegeragent.agentcompact.targetPort }}
+    - name: agent-binary
+      port: {{ .Values.jaegeragent.agentbinary.port }}
+      protocol: {{ .Values.jaegeragent.agentbinary.protocol }}
+      targetPort: {{ .Values.jaegeragent.agentbinary.targetPort }}
+    - name: agent-configs
+      port: {{ .Values.jaegeragent.agentconfigs.port }}
+      protocol: {{ .Values.jaegeragent.agentconfigs.protocol }}
+      targetPort: {{ .Values.jaegeragent.agentconfigs.targetPort }}
+  selector:
+    release: {{ .Release.Name }}
+  clusterIP: {{ .Values.jaegeragent.clusterIP }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Values.name }}-jaegerzipkin"
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  ports:
+    - name: zipkin-collector
+      port: {{ .Values.jaegerzipkin.jaegercollectorzipkin.port }}
+      protocol: {{ .Values.jaegerzipkin.jaegercollectorzipkin.protocol }}
+      targetPort: {{ .Values.jaegerzipkin.jaegercollectorzipkin.targetPort }}
+  selector:
+    release: {{ .Release.Name }}
+  clusterIP: {{ .Values.jaegerzipkin.clusterIP }}
+
+
+

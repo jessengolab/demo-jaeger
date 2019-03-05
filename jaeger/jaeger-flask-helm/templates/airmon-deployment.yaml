@@ -1,0 +1,79 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+#  creationTimestamp: {{ .Release.Time }}
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+#  namespace: {{ .Values.namespace }}
+  name: "{{ .Values.name }}-deployment"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy: {}
+  template:
+    metadata:
+#      creationTimestamp: {{ .Release.Time }}
+      labels:
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: {{ .Values.image.flaskApp }}
+        name: {{ .Values.name }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.deployment.flaskApp.containerPort }}
+          protocol: TCP
+        env:
+#          - name: POSTGRES_PASSWORD
+#            value: {{ .Values.postgresql.dbPassword }}
+#          - name: DB_PASSWORD
+#            value: {{ .Values.postgresql.dbPassword }}
+#          - name: DB_USER
+#            value: {{ .Values.postgresql.dbUsername }}
+#          - name: DB_NAME
+#            value: {{ .Values.postgresql.postgresDatabase }}
+#          - name: AIRMONDB_URL
+#            value: {{ .Values.airmondb.url }}
+#          - name: TO_ADDR
+#            value: {{ .Values.smtp.toAddr }}
+#          - name: FROM_ADDR
+#            value: {{ .Values.smtp.fromAddr }}
+#          - name: SMTP_SERVER
+#            value: {{ .Values.smtp.server }}
+#          - name: FLASK_CONFIG
+#            value: {{ .Values.deployment.flaskApp.flaskConfig }}
+#          - name: AIRFLOW_WEBSERVER_URL
+#            value: {{ .Values.airflow.webserverUrl }}
+          - name: JAEGER_SERVICE_NAME
+            value: hello-world
+          - name: JAEGER_AGENT_HOST   # NOTE: Point to the Agent daemon on the Node
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          - name: JAEGER_AGENT_PORT
+            value: "6831"
+        resources: {}
+#        env:
+#          - name: MY_POD_NAME
+#            valueFrom:
+#              fieldRef:
+#                fieldPath: metadata.name
+#        livenessProbe:
+#          httpGet:
+#            path: /manage/health
+#            port: http
+#        readinessProbe:
+#          httpGet:
+#            path: /manage/health
+#            port: http
+
+#        lifecycle:
+#          postStart:
+#            exec:
+#              command: ["/bin/sh", "-c", "echo postStart: $MY_POD_NAME > /proc/1/fd/1"]
+#          preStop:
+#            exec:
+#              command: ["/bin/sh", "-c", "echo preStop: $MY_POD_NAME > /proc/1/fd/1"]
+#      restartPolicy: {{ .Values.restartPolicy }}
+
+status: {}

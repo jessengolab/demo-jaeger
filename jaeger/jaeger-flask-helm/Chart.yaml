@@ -1,0 +1,6 @@
+name: jaeger-test
+description: Helm chart for testing Jaeger
+version: 0.0.1
+keywords:
+sources:
+home:

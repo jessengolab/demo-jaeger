@@ -1,0 +1,70 @@
+name: jaeger
+  
+replicaCount: 1
+
+image:
+  repository: jaegertracing/all-in-one
+  pullPolicy: IfNotPresent
+
+deployment:
+  strategy:
+    type: Recreate
+  
+  annotations: {}
+  prometheus:
+    scrape: true
+    port: 16686
+
+  readinessProbe:
+    httpGet:
+      path: "/"
+      initialDelaySeconds: 5
+
+jaegerquery:
+  queryhttp:
+    port: 80
+    protocol: TCP
+    targetPort: 16686
+  type: LoadBalancer
+
+jaegercollector:
+  jaegercollectortchannel:
+    port: 14267
+    protocol: TCP
+    targetPort: 14267
+  jaegercollectorhttp:
+    port: 14268
+    protocol: TCP
+    targetPort: 14268
+  jaegercollectorzipkin:
+    port: 9411
+    protocol: TCP
+    targetPort: 9411
+  type: ClusterIP
+
+jaegeragent:
+  agentzipkinthrift:
+    port: 5775
+    protocol: UDP
+    targetPort: 5775
+  agentcompact:
+    port: 6831
+    protocol: UDP
+    targetPort: 6831
+  agentbinary:
+    port: 6832
+    protocol: UDP
+    targetPort: 6832
+  agentconfigs:
+    port: 5778
+    protocol: TCP
+    targetPort: 5778
+  clusterIP: None
+
+jaegerzipkin:
+  jaegercollectorzipkin:
+    port: 9411
+    protocol: TCP
+    targetPort: 9411
+  clusterIP: None
+

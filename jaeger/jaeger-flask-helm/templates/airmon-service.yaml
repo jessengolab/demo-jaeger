@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+#  creationTimestamp: {{ .Release.Time }}
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    auto-ingress/enabled: 'enabled'
+  name: "{{ .Values.name }}-service"
+#  namespace: {{ .Values.namespace }}
+spec:
+  type: {{ .Values.service.flaskApp.type }}
+  ports:
+    - name: http
+      port: {{ .Values.service.flaskApp.port }}
+      targetPort: {{ .Values.service.flaskApp.targetPort }}
+      protocol: TCP
+  env:
+    JAEGER_AGENT_HOST: jaeger.default.svc.cluster.local
+  selector:
+    release: {{ .Release.Name }}

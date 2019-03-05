@@ -1,0 +1,41 @@
+name: airmon
+#namespace: agatha-live
+
+replicaCount: 1
+restartPolicy: Always
+
+image:
+#  flaskApp: gcr.io/kr-snulclm-sandbox-8a/flask-template:latest
+  flaskApp: 8451/airmon:0.0.3
+  containerName: flask-template-container
+
+deployment:
+  flaskApp:
+    containerPort: 80
+
+service:
+  flaskApp:
+    type: LoadBalancer
+    port: 8081
+    targetPort: 80
+
+smtp:
+  server: "gcp-mail.int.8451.com"
+  fromAddr: "prod-gcp-no-reply@8451.com"
+  toAddr: "david.scroggins.contractor@8451.com"
+
+postgresql:
+  postgresDatabase: airflow
+  dbUsername: airflow
+  dbPassword: airflow
+#  postgresDatabase: dork_db
+#  dbPassword: W4Rx6QXIsts+6fZQPtswtmQQ7NKXSbQZNmfWN3LZW4ytbutjjHBPcT7aKpspR46Zmd0MvCZkFcOmzn7H7B6Nmw==
+
+airmondb:
+  url: postgresql://airmon:airmon@airmon-postgres:5433/airmon
+
+redis:
+  redisUrl: "redis://:admin123@redis:6379/0"
+
+airflow:
+  webserverUrl: "http://dork-airflow-deployment:8080/admin"

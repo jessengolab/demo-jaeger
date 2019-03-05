@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "{{ .Values.name }}-deployment"
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+{{- if .Values.deployment.annotations }}
+  annotations:
+{{ toYaml .Values.deployment.annotations | indent 4 }}
+{{- end }}
+  prometheus:
+    scrape: "true"
+    port: {{ .Values.jaegerquery.queryhttp.targetPort }}
+    protocol: TCP
+  template:
+    metadata:
+      name: "{{ .Values.name }}-deployment"
+      labels:
+        release: {{ .Release.Name }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    spec:
+      containers:
+      - name: {{ .Values.name }}
+        image: {{ .Values.image.repository }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: COLLECTOR_ZIPKIN_HTTP_PORT
+            value: "{{ .Values.jaegercollector.jaegercollectorzipkin.port }}"
+        ports:
+        - containerPort: {{ .Values.jaegeragent.agentzipkinthrift.port }}
+          protocol: {{ .Values.jaegeragent.agentzipkinthrift.protocol }}
+        - containerPort: {{ .Values.jaegeragent.agentcompact.port }}
+          protocol: {{ .Values.jaegeragent.agentcompact.protocol }}
+        - containerPort: {{ .Values.jaegeragent.agentbinary.port }}
+          protocol: {{ .Values.jaegeragent.agentbinary.protocol }}
+        - containerPort: {{ .Values.jaegeragent.agentconfigs.port }}
+          protocol: {{ .Values.jaegeragent.agentconfigs.protocol }}
+        - containerPort: {{ .Values.jaegercollector.jaegercollectorzipkin.port }}
+          protocol: {{ .Values.jaegercollector.jaegercollectorzipkin.protocol }}
+        - containerPort: {{ .Values.jaegerquery.queryhttp.targetPort }}
+          protocol: {{ .Values.jaegerquery.queryhttp.protocol }}
+        readinessProbe:
+          httpGet:
+            port: 14269 
+          initialDelaySeconds: 5
+
+status: {}
+
